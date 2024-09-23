@@ -61,9 +61,9 @@ def generar_tiempo_atencion(prioridad):
     else:
         return random.expovariate(1.0 / TABM)
 
-# Ciclo de simulación (ejemplo simplificado)
+# Ciclo de simulación (un ejemplo cortito sin mirar el LucidChart)
 while True:
-    if T >= HV:  # Condición de finalización (puedes definir otra)
+    if T >= HV:  # Condición de finalización
         break
 
     if T == TPLL:
@@ -85,7 +85,7 @@ while True:
             TPSM[idx] = HV  # Temporalmente establecer como "infinito"
 
     # Avanzar el tiempo
-    T += 1  # En un caso real, usarías el menor tiempo entre TPLL, TPSN, TPSM
+    T += 1  #Menor tiempo entre TPLL, TPSN, TPSM
 
 # Mostrar resultados
-### INICIALIZAR VECTORES DEBAJO###
+
