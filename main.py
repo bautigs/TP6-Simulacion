@@ -138,7 +138,7 @@ def generar_tiempo_atencion_alta():
  #             ret = generar_tiempo_atencion_baja_media
 
         
-
+#acá no habría que preguntar si algunos de los TPS es HV? Porque HV seríael mayor de los valores de salida y estaría descartando a un operador que en realidad está disponible. 
     
 def obtener_menor_TPS_arreglo(arreglo):
     minTPSLista = HV
