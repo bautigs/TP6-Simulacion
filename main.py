@@ -25,7 +25,8 @@ scaleAltaTempAtencion =  0.7434131662822517
 
 datosGeneradosIntArribo = stats.fatiguelife.rvs(c=cIntArribo, loc=locIntArribo, scale=scaleIntArribo, size=4000, random_state=None)
 datosGeneradosTiempoAtencionBajaMedia = stats.fatiguelife.rvs(c=cBajaMediaTempAtencion, loc=locBajaMediaTempAtencion, scale=scaleBajaMediaTempAtencion, size=4000, random_state=None)
-datosGeneradosTiempoAtencionAlta = stats.gengamma.rvs(a=aAltaTempAtencion, c= cAltaTempAtencion, loc=locAltaTempAtencion, scale=scaleAltaTempAtencion, size=4000, random_state=None)
+datosGeneradosTiempoAtencionAlta = stats.burr12.rvs(c=0.540607168492198, d=3.2418488777108823, loc=0.15276667079999998, scale = 20.241299029725127, size=4000, random_state=None)
+#datosGeneradosTiempoAtencionAlta = stats.gengamma.rvs(a=aAltaTempAtencion, c= cAltaTempAtencion, loc=locAltaTempAtencion, scale=scaleAltaTempAtencion, size=4000, random_state=None)
 
 # Configuración inicial
 sys.setrecursionlimit(10**9)
@@ -138,7 +139,7 @@ def generar_tiempo_atencion_alta():
  #             ret = generar_tiempo_atencion_baja_media
 
         
-#acá no habría que preguntar si algunos de los TPS es HV? Porque HV seríael mayor de los valores de salida y estaría descartando a un operador que en realidad está disponible. 
+
     
 def obtener_menor_TPS_arreglo(arreglo):
     minTPSLista = HV
@@ -182,7 +183,7 @@ def buscar_operador(tipo_operador):
         
 
 def simular_llegada():
-    global T,NSM,STSM,NSB,STSB,TABM,STAM,NSA,STSA,TAA,STAA,ITOM,STOM,ITON,STON,NTAB,NTAA,NTAM
+    global T,NSM,STSM,NSB,STSB,TABM,STAM,STAB,NSA,STSA,TAA,STAA,ITOM,STOM,ITON,STON,NTAB,NTAA,NTAM
     global STLLM,STLLA,STLLB
     global TPSN,TPSM,TPLL
     global i, j
@@ -233,7 +234,7 @@ def simular_llegada():
                 TABM = generar_tiempo_atencion_baja_media()
                 print(f"El tiempo de atencion generado fue de {TABM}")
                 TPSM[x] = T + TABM
-                STAM = STAM + TABM 
+                STAB = STAB + TABM 
                 VUAM[x] = 'B'
                 STOM[x] = STOM[x] + (T - ITOM[x]) 
 
@@ -242,7 +243,7 @@ def simular():
     while True:
     # declarar como global todas las variables que esta función (simulación()) vaya a "tocar" para que las modifique globalmente. Así con cualquier otra función
     # que modifique las variables 
-        global T,NSM,STSM,NSB,STSB,TABM,STAM,ITOM,NSA,STSA,TAA,STAA,ITOM,STOM,ITON,STOM,NTAB,NTAA,NTAM,STLLA,STAB
+        global T,NSM,STSM,NSB,STSB,TABM,STAM,ITOM,NSA,STSA,TAA,STAA,ITOM,STOM,ITON,STOM,NTAB,NTAA,NTAM,STAB
         global TPSN,TPSM,TPLL
         global i, j
         global VUAM
@@ -250,7 +251,7 @@ def simular():
         i = obtener_menor_TPSN()
         j = obtener_menor_TPSM()
         
-        if TPSM[i] <= TPSN[j]:
+        if TPSM[j] <= TPSN[i]:
             if TPLL > TPSM[j]: 
             #logica salida mantenimiento
                 T = TPSM[j]
@@ -274,10 +275,13 @@ def simular():
                         TABM = generar_tiempo_atencion_baja_media()
                         TPSM[j] = T + TABM
                         STAM = STAM + TABM
+                        VUAM[j] = 'M'
+
                     else: 
                         TABM = generar_tiempo_atencion_baja_media()
                         TPSM[j] = T + TABM
                         STAB = STAB + TABM
+                        VUAM[j] = 'B'
                 else:
                     TPSM[j] = HV
                     ITOM[j] = T
@@ -331,14 +335,17 @@ def simular():
 
         if T >= TF:  # Condición de finalización
             if NSA + NSM + NSB == 0:
-                PEA = (STSA - STLLA - STAA) / NTAA
                 PEB = (STSB - STLLB - STAB) / NTAB
                 PEM = (STSM - STLLM - STAM) / NTAM
+                PEA = (STSA - STLLA - STAA) / NTAA
 
-                print(f"\nPromedio de tiempo de espera para la resolución de un evento de prioridad baja en minutos: {PEA}")
-                print(f"Promedio de tiempo de espera para la resolución de un evento de prioridad media en minutos: {PEB}")
-                print(f"Promedio de tiempo de espera para la resolución de un evento de prioridad alta en minutos: {PEM}")
-
+                print(f"\nPromedio de tiempo de espera para la resolución de un evento de prioridad baja en minutos: {PEB}")
+                print(f"STS baja prioridad {STSB}, STLL baja prioridad {STLLB}, STA baja prioridad:  {STAB}. Total baja prioridad {NTAB}")
+                print(f"Promedio de tiempo de espera para la resolución de un evento de prioridad media en minutos: {PEM}")
+                print(f"STS media prioridad {STSM}, STLL media prioridad {STLLM}, STA media prioridad:  {STAM}. Total media prioridad {NTAM}")
+                print(f"Promedio de tiempo de espera para la resolución de un evento de prioridad alta en minutos: {PEA}")
+                print(f"STS alta prioridad {STSA}, STLL media prioridad {STLLA}, STA alta prioridad:  {STAA}. Total alta prioridad {NTAA}")
+                
                 print("\nPorcentajes de tiempo ocioso para operadores de emergencia:")
                 for i in range(len(TPSN)):
 
@@ -369,4 +376,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
