@@ -17,16 +17,10 @@ cBajaMediaTempAtencion = 2.6700875592560775
 locBajaMediaTempAtencion = 0.5314588059087729
 scaleBajaMediaTempAtencion =  33.49069102293302
 
-#Parametros de la distribucion gengamma que nos devolvio en google colab el tiempo de atencion de alarmas de alta prioridad
-aAltaTempAtencion = 1.6142700910883647
-cAltaTempAtencion = 0.3206763803630954
-locAltaTempAtencion = 0.15276667079999998
-scaleAltaTempAtencion =  0.7434131662822517
-
 datosGeneradosIntArribo = stats.fatiguelife.rvs(c=cIntArribo, loc=locIntArribo, scale=scaleIntArribo, size=4000, random_state=None)
 datosGeneradosTiempoAtencionBajaMedia = stats.fatiguelife.rvs(c=cBajaMediaTempAtencion, loc=locBajaMediaTempAtencion, scale=scaleBajaMediaTempAtencion, size=4000, random_state=None)
 datosGeneradosTiempoAtencionAlta = stats.burr12.rvs(c=0.540607168492198, d=3.2418488777108823, loc=0.15276667079999998, scale = 20.241299029725127, size=4000, random_state=None)
-#datosGeneradosTiempoAtencionAlta = stats.gengamma.rvs(a=aAltaTempAtencion, c= cAltaTempAtencion, loc=locAltaTempAtencion, scale=scaleAltaTempAtencion, size=4000, random_state=None)
+
 
 # Configuración inicial
 sys.setrecursionlimit(10**9)
